@@ -18,7 +18,15 @@
 using namespace std;
 
 Person::Person(string inputString) : Person() {
-    //TODO: Implement non-default constructor
+    stringstream ss(inputString);
+    ss >> turn;
+    char x;
+    ss >> x;
+    ss >> currrentFloor;
+    char y;
+    ss >> y;
+    ss >> targetFloor;
+    ss >> angerLevel;
 }
 
 bool Person::tick(int currentTime) {
@@ -34,7 +42,12 @@ bool Person::tick(int currentTime) {
 }
 
 void Person::print(ostream &outs) {    
-    //TODO: Implement print
+    string infostring = "";
+    int i;
+    for(i = 1; i < p.size(); i ++){
+        infostring[0] = p[i];
+    }
+    outs << infostring;
 }
 
 //////////////////////////////////////////////////////
