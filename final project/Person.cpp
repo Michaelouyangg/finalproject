@@ -32,12 +32,12 @@ Person::Person(string inputString) : Person() {
 bool Person::tick(int currentTime) {
    if(currentTime % TICKS_PER_ANGER_INCREASE == 0){
         angerLevel++;
-        if(angerLevel >= MAX_ANGER){
-            return true;
-        }
-        else if(angerLevel < MAX_ANGER){
-            return false;
-        }
+    }
+    if(angerLevel >= MAX_ANGER){
+        return true;
+    }
+    else{
+        return false;
     }
 }
 
