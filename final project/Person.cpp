@@ -42,12 +42,7 @@ bool Person::tick(int currentTime) {
 }
 
 void Person::print(ostream &outs) {    
-    string infostring = "";
-    int i;
-    for(i = 1; i < p.size(); i ++){
-        infostring[0] = p[i];
-    }
-    outs << infostring;
+    outs << 'f' <<currentFloor << 't' <<targetFloor << 'a' << angerLevel;
 }
 
 //////////////////////////////////////////////////////
