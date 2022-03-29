@@ -22,8 +22,15 @@ Person::Person(string inputString) : Person() {
 }
 
 bool Person::tick(int currentTime) {
-    
-    return false;
+   if(currentTime % TICKS_PER_ANGER_INCREASE == 0){
+        angerLevel++;
+        if(angerLevel >= MAX_ANGER){
+            return true;
+        }
+        else if(angerLevel < MAX_ANGER){
+            return false;
+        }
+    }
 }
 
 void Person::print(ostream &outs) {    
