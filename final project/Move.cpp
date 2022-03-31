@@ -20,17 +20,90 @@ using namespace std;
 
 Move::Move(string commandString) : Move() {
     //TODO: Implement non-default constructor
+    //set the default value to false
+    isPass = false;
+    isPickup = false;
+    isSave = false;
+    isQuit = false;
+
+    if (commandString == "") {
+        isPass = true;
+    }
+    else if (commandString == "S" || commandString == "s") {
+            isSave = true;
+    }
+    else if (commandString == "Q" || commandString == "q") {
+            isQuit = true;
+    }
+    else {
+        string str = commandString;
+        stringstream ss(str);
+        char char1;
+        char char2;
+        ss >> char1 >> elevatorId >> char2;
+
+        if (char2 == 'f') {
+            ss >> targetFloor;
+            }
+        else if (char2 == 'p') {
+            isPickup = true;
+        }
+    }
 }
 
 bool Move::isValidMove(Elevator elevators[NUM_ELEVATORS]) const {
     //TODO: Implement isValidMove
+    //for three fundamental moves
+     if (isPass == true || isQuit == true || isSave == true) {
+        return true;
+     }
     
-    //Returning false to prevent compilation error
+    //for Pickup Moves and Servicing Moves
+     else if (elevatorId >= 0 && elevatorId < NUM_ELEVATORS) {
+            if (!(elevators[elevatorId].isServicing())) {
+                if (isPickup == true) {
+                    return true;
+                    }
+                //for Servicing Moves only
+                else if (targetFloor >= 0 && targetFloor < NUM_FLOORS) {
+                        if (targetFloor != elevators[elevatorId].getCurrentFloor()) {
+                            return true;
+                            }
+                        else {
+                            return false;
+                            }
+                }
+            }
+     else {
+            return false;
+            }
+     }
     return false;
 }
 
 void Move::setPeopleToPickup(const string& pickupList, const int currentFloor, const Floor& pickupFloor) {
     //TODO: Implement setPeopleToPickup
+    int index = 0;
+    numPeopleToPickup = 0;
+    totalSatisfaction = 0;
+
+    for (int i = 0; i < pickupList.size(); i++) {
+        peopleToPickup[i] = (pickupList[i] - '0');
+        numPeopleToPickup++;
+    }
+    int maxDistance = 0;
+
+    for (int i = 0; i < numPeopleToPickup; i++) {
+         int anger = pickupFloor.getPersonByIndex(peopleToPickup[i]).getAngerLevel();
+         totalSatisfaction += (MAX_ANGER - anger);
+         int distance = abs(pickupFloor.getPersonByIndex(peopleToPickup[i]).getTargetFloor() - currentFloor);
+         if (maxDistance < distance) {
+            maxDistance = distance;
+            index = i;
+            }
+        }
+     targetFloor = pickupFloor.getPersonByIndex(peopleToPickup[index]).getTargetFloor();
+     return;
 }
 
 //////////////////////////////////////////////////////
