@@ -16,14 +16,57 @@
 using namespace std;
 
 int Floor::tick(int currentTime) {
-    //TODO: Implement tick
-
-    //returning 0 to prevent compilation error
-    return 0;
+    int i;
+    int j = 0;
+    int angernum = 0;
+    int arr[angernum];
+    for(i = 0; i < MAX_PEOPLE_PER_FLOOR; i++){
+        if(people[i].tick(currentTime)){
+            angernum++;
+            while(j < angernum){
+                arr[j] = i;
+                j++;
+            }
+        }
+    }
+    removePeople(arr, angernum);
+    return angernum;
 }
 
 void Floor::addPerson(Person newPerson, int request) {
-    //TODO: Implement addPerson
+    if(numPeople == 0){
+        people[0] = newPerson;
+        numPeople++;
+    }
+    else if(numPeople == 1){
+        people[1] = newPerson;
+        numPeople++;
+    }
+    else if(numPeople == 2){
+        people[2] = newPerson;
+        numPeople++;
+    }
+    else if(numPeople == 3){
+        people[3] = newPerson;
+        numPeople++;
+    }
+    else if(numPeople == 4){
+        people[4] = newPerson;
+        numPeople++;
+    }
+    else if(numPeople == 5){
+        people[5] = newPerson;
+        numPeople++;
+    }
+    if(request > 0){
+        hasUpRequest = true;
+        hasDownRequest = false;
+    }
+    else if(request < 0){
+        hasDownRequest = true;
+        hasUpRequest =  false;
+    }
+
 }
 
 void Floor::removePeople(int indicesToRemove[MAX_PEOPLE_PER_FLOOR], int numPeopleToRemove) {
