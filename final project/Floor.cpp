@@ -23,10 +23,8 @@ int Floor::tick(int currentTime) {
     for(i = 0; i < MAX_PEOPLE_PER_FLOOR; i++){
         if(people[i].tick(currentTime)){
             angernum++;
-            while(j < angernum){
-                arr[j] = i;
-                j++;
-            }
+            arr[j] = i;
+            j++;
         }
     }
     removePeople(arr, angernum);
@@ -58,19 +56,50 @@ void Floor::addPerson(Person newPerson, int request) {
         people[5] = newPerson;
         numPeople++;
     }
+    else if(numPeople == 6){
+        people[6] = newPerson;
+        numPeople++;
+    }
+    else if(numPeople == 7){
+        people[7] = newPerson;
+        numPeople++;
+    }
+    else if(numPeople == 8){
+        people[8] = newPerson;
+        numPeople++;
+    }
+    else if (numPeople == 9){
+        people[9] = newPerson;
+        numPeople++;
+    }
     if(request > 0){
         hasUpRequest = true;
         hasDownRequest = false;
     }
     else if(request < 0){
+        hasUpRequest = false;
         hasDownRequest = true;
-        hasUpRequest =  false;
     }
-
 }
 
 void Floor::removePeople(int indicesToRemove[MAX_PEOPLE_PER_FLOOR], int numPeopleToRemove) {
-    //TODO: Implement removePeople
+    int i;
+    int j;
+    int p = 0;
+    int x;
+    Person arr2[numPeople];
+    sort(indicesToRemove, indicesToRemove + numPeopleToRemove);
+    for(i = 0; i < numPeople; i++){
+        for(j = 0; j < numPeopleToRemove; j++){
+            if(i != indicesToRemove[j]){
+                arr2[p] = people[i];
+            }
+            p++;
+        }
+    }
+    for(x = 0; x < numPeople; x++){
+        people[x] = arr2[x];
+    }
 }
 
 void Floor::resetRequests() {
