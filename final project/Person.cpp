@@ -26,6 +26,8 @@ Person::Person(string inputString) : Person() {
     char y;
     ss >> y;
     ss >> targetFloor;
+    char z;
+    ss >> z;
     ss >> angerLevel;
 }
 
