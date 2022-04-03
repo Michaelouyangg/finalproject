@@ -22,7 +22,7 @@ Person::Person(string inputString) : Person() {
     ss >> turn;
     char x;
     ss >> x;
-    ss >> currrentFloor;
+    ss >> currentFloor;
     char y;
     ss >> y;
     ss >> targetFloor;
