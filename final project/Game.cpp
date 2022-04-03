@@ -20,31 +20,91 @@ using namespace std;
 // Stub for playGame for Core, which plays random games
 // You *must* revise this function according to the RME and spec
 void Game::playGame(bool isAIModeIn, ifstream& gameFile) {
-    std::mt19937 gen(1);
-    std::uniform_int_distribution<> floorDist(0, 9);
-    std::uniform_int_distribution<> angerDist(0, 3);
-
     isAIMode = isAIModeIn;
     printGameStartPrompt();
     initGame(gameFile);
+    string fileString = "";
 
-    while (true) {
-        int src = floorDist(gen);
-        int dst = floorDist(gen);
-        if (src != dst) {
-            std::stringstream ss;
-            ss << "0f" << src << "t" << dst << "a" << angerDist(gen);
-            Person p(ss.str());
-            building.spawnPerson(p);
-        }
-
-        building.prettyPrintBuilding(cout);
-        satisfactionIndex.printSatisfaction(cout, false);
-        checkForGameEnd();
-
-        Move nextMove = getMove();
-        update(nextMove);
+    if (!gameFile.is_open()) {
+        exit(1);
     }
+    else {
+        while (gameFile >> fileString){
+            Person p1(fileString);
+            if (p1.getTurn() <= building.getTime()) {
+                building.spawnPerson(p1);
+            }
+            else {
+                building.prettyPrintBuilding(cout);
+                satisfactionIndex.printSatisfaction(cout, false);
+                checkForGameEnd();
+                Move nextMove = getMove();
+                update(nextMove);
+                building.spawnPerson(p1);
+            }
+        }
+        while (building.getTime() < MAX_TURNS
+                && satisfactionIndex.getSatisfaction() >= 0) {
+                building.prettyPrintBuilding(cout);
+                satisfactionIndex.printSatisfaction(cout, false);
+                checkForGameEnd();
+                Move nextMove = getMove();
+                update(nextMove);
+        }
+    }
+}
+
+// Stub for isValidPickupList for Core
+// You *must* revise this function according to the RME and spec
+bool Game::isValidPickupList(const string& pickupList, const int pickupFloorNum) const {
+    int listPeopleIndex = 0;
+    
+    for (int i = 0; i < pickupList.length() - 1; i++) {
+        for (int j = i + 1; j < pickupList.length(); j++) {
+            if (pickupList.at(i) != pickupList.at(j)) {
+                return true;
+            }
+        }
+    }
+    
+    for (int i = 0; i < pickupList.length(); i++) {
+        if (pickupList.at(i) - '0' > 0 || pickupList.at(i) - '0' < 9) {
+            return true;
+        }
+    }
+    
+    if (pickupList.length() < ELEVATOR_CAPACITY) {
+            return true;
+    }
+    
+    for (int i = 0; i < pickupList.length(); i++) {
+        if (pickupList.at(i) - '0' > listPeopleIndex) {
+            listPeopleIndex = pickupList.at(i) - '0';
+        }
+    }
+    if(building.getFloorByFloorNum(pickupFloorNum).getNumPeople() > listPeopleIndex) {
+        return true;
+    }
+    
+    if (building.getFloorByFloorNum(pickupFloorNum).getPersonByIndex(pickupList.at(0) - '0').getTargetFloor()
+        > building.getFloorByFloorNum(pickupFloorNum).getPersonByIndex(pickupList.at(0) - '0').getCurrentFloor()) {
+        for (int i = 1; i < pickupList.length(); i++) {
+            if (building.getFloorByFloorNum(pickupFloorNum).getPersonByIndex(pickupList.at(i) - '0').getTargetFloor()
+        > building.getFloorByFloorNum(pickupFloorNum).getPersonByIndex(pickupList.at(i) - '0').getCurrentFloor()) {
+                return true;
+            }
+        }
+    }
+    else if (building.getFloorByFloorNum(pickupFloorNum).getPersonByIndex(pickupList.at(0) - '0').getTargetFloor()
+    < building.getFloorByFloorNum(pickupFloorNum).getPersonByIndex(pickupList.at(0) - '0').getCurrentFloor()) {
+        for (int i = 1; i < pickupList.length(); i++) {
+            if (building.getFloorByFloorNum(pickupFloorNum).getPersonByIndex(pickupList.at(i) - '0').getTargetFloor()
+                < building.getFloorByFloorNum(pickupFloorNum).getPersonByIndex(pickupList.at(i) - '0').getCurrentFloor()) {
+                return true;
+            }
+        }
+    }
+    return false;
 }
 
 // Stub for isValidPickupList for Core
