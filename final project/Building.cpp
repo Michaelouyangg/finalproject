@@ -16,17 +16,35 @@ using namespace std;
 
 void Building::spawnPerson(Person newPerson){
     //TODO: Implement spawnPerson
+    floors[newPerson.getCurrentFloor()].addPerson(newPerson,
+    newPerson.getTargetFloor() - newPerson.getCurrentFloor());
 }
 
 void Building::update(Move move){
     //TODO: Implement update
+    if (! move.isPassMove()) {
+        elevators[move.getElevatorId()].serviceRequest(move.getTargetFloor());
+        if (move.isPickupMove()) {
+            int peoplePickUp[MAX_PEOPLE_PER_FLOOR];
+            move.copyListOfPeopleToPickup(peoplePickUp);
+            floors[elevators[move.getElevatorId()].getCurrentFloor()].removePeople(peoplePickUp, move.getNumPeopleToPickup());
+            }
+     }
 }
 
 int Building::tick(Move move){
     //TODO: Implement tick
-
-    //returning 0 to prevent compilation error
-    return 0;
+    time++;
+    update(move);
+    int peopleExploded = 0;
+    for (int i = 0; i < NUM_ELEVATORS; i++) {
+        elevators[i].tick(time);
+    }
+    for (int i = 0; i < NUM_FLOORS; i++) {
+        floors[i].tick(time);
+        peopleExploded += floors[i].tick(time);
+    }
+    return peopleExploded;
 }
 
 //////////////////////////////////////////////////////
