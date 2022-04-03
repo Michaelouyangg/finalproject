@@ -20,14 +20,16 @@ int Floor::tick(int currentTime) {
     int j = 0;
     int angernum = 0;
     int arr[angernum];
-    for(i = 0; i < MAX_PEOPLE_PER_FLOOR; i++){
+    for(i = 0; i < numPeople; i++){
         if(people[i].tick(currentTime)){
             angernum++;
             arr[j] = i;
             j++;
         }
     }
-    removePeople(arr, angernum);
+    if(angernum > 0){
+        removePeople(arr, angernum);
+    }
     return angernum;
 }
 
@@ -74,10 +76,8 @@ void Floor::addPerson(Person newPerson, int request) {
     }
     if(request > 0){
         hasUpRequest = true;
-        hasDownRequest = false;
     }
     else if(request < 0){
-        hasUpRequest = false;
         hasDownRequest = true;
     }
 }
@@ -103,7 +103,19 @@ void Floor::removePeople(int indicesToRemove[MAX_PEOPLE_PER_FLOOR], int numPeopl
 }
 
 void Floor::resetRequests() {
-    //TODO: Implement resetRequests
+    int i;
+    int request;
+    hasUpRequest = false;
+    hasDownRequest = false;
+    for(i = 0; i < numPeople; i++){
+        request = people[i].getTargetFloor() - people[i].getCurrentFloor();
+        if(request > 0){
+            hasUpRequest = true;
+        }
+        else if(request < 0){
+            hasDownRequest = true;
+        }
+    }
 }
 
 //////////////////////////////////////////////////////
