@@ -20,36 +20,30 @@ using namespace std;
 // Stub for playGame for Core, which plays random games
 // You *must* revise this function according to the RME and spec
 void Game::playGame(bool isAIModeIn, ifstream& gameFile) {
-    isAIMode = isAIModeIn;
-    printGameStartPrompt();
     initGame(gameFile);
     string fileString = "";
-
+    
     if (!gameFile.is_open()) {
+        isAIMode = isAIModeIn;
+        printGameStartPrompt();
         exit(1);
     }
-    else {
+    
+    isAIMode = isAIModeIn;
+    printGameStartPrompt();
+    
+    if (gameFile.is_open()){
         while (gameFile >> fileString){
             Person p1(fileString);
-            if (p1.getTurn() <= building.getTime()) {
-                building.spawnPerson(p1);
-            }
-            else {
+            while (p1.getTurn() > building.getTime()) {
                 building.prettyPrintBuilding(cout);
                 satisfactionIndex.printSatisfaction(cout, false);
                 checkForGameEnd();
+
                 Move nextMove = getMove();
                 update(nextMove);
-                building.spawnPerson(p1);
             }
-        }
-        while (building.getTime() < MAX_TURNS
-                && satisfactionIndex.getSatisfaction() >= 0) {
-                building.prettyPrintBuilding(cout);
-                satisfactionIndex.printSatisfaction(cout, false);
-                checkForGameEnd();
-                Move nextMove = getMove();
-                update(nextMove);
+            building.spawnPerson(p1);
         }
     }
 }
