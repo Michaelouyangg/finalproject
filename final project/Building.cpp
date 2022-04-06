@@ -34,14 +34,15 @@ void Building::update(Move move){
 
 int Building::tick(Move move){
     //TODO: Implement tick
+    int peopleExploded = 0;
+    
     time++;
     update(move);
-    int peopleExploded = 0;
+    
     for (int i = 0; i < NUM_ELEVATORS; i++) {
         elevators[i].tick(time);
     }
     for (int i = 0; i < NUM_FLOORS; i++) {
-        floors[i].tick(time);
         peopleExploded += floors[i].tick(time);
     }
     return peopleExploded;
