@@ -20,7 +20,6 @@ using namespace std;
 // Stub for playGame for Core, which plays random games
 // You *must* revise this function according to the RME and spec
 void Game::playGame(bool isAIModeIn, ifstream& gameFile) {
-    initGame(gameFile);
     string fileString = "";
     
     if (!gameFile.is_open()) {
@@ -29,10 +28,12 @@ void Game::playGame(bool isAIModeIn, ifstream& gameFile) {
         exit(1);
     }
     
-    isAIMode = isAIModeIn;
-    printGameStartPrompt();
-    
     if (gameFile.is_open()){
+        
+        isAIMode = isAIModeIn;
+        printGameStartPrompt();
+        initGame(gameFile);
+        
         while (gameFile >> fileString){
             Person p1(fileString);
             while (p1.getTurn() > building.getTime()) {
@@ -51,55 +52,55 @@ void Game::playGame(bool isAIModeIn, ifstream& gameFile) {
 // Stub for isValidPickupList for Core
 // You *must* revise this function according to the RME and spec
 bool Game::isValidPickupList(const string& pickupList, const int pickupFloorNum) const {
-    int listPeopleIndex = 0;
-    
+
     for (int i = 0; i < pickupList.length() - 1; i++) {
         for (int j = i + 1; j < pickupList.length(); j++) {
-            if (pickupList.at(i) != pickupList.at(j)) {
-                return true;
+                if (pickupList.at(i) == pickupList.at(j)) {
+                    return false;
+                }
+            }
+    }
+
+    for (int i = 0; i < pickupList.length(); i++) {
+        if (pickupList.at(i) - '0' < 0 || pickupList.at(i) - '0' > 9) {
+            return false;
+            }
+    }
+
+    if (pickupList.length() > ELEVATOR_CAPACITY) {
+            return false;
+    }
+    
+    int a = pickupList.at(0) - int('0');
+    for (int i = 0; i < pickupList.length(); i++) {
+        if (pickupList.at(i) - '0' > a) {
+            a = pickupList.at(i) - '0';
+        }
+    }
+    if (a >= building.getFloorByFloorNum(pickupFloorNum).getNumPeople()) {
+        return false;
+    }
+
+    if (building.getFloorByFloorNum(pickupFloorNum).getPersonByIndex(pickupList.at(0) - '0').getTargetFloor() > building.getFloorByFloorNum(pickupFloorNum).getPersonByIndex(pickupList.at(0) - '0').getCurrentFloor()) {
+        for (int i = 1; i < pickupList.length(); i++) {
+            if (building.getFloorByFloorNum(pickupFloorNum).getPersonByIndex(pickupList.at(i) - '0').getTargetFloor()
+            < building.getFloorByFloorNum(pickupFloorNum).getPersonByIndex(pickupList.at(i) - '0').getCurrentFloor()) {
+                    return false;
             }
         }
     }
-    
-    for (int i = 0; i < pickupList.length(); i++) {
-        if (pickupList.at(i) - '0' > 0 || pickupList.at(i) - '0' < 9) {
-            return true;
+    else {
+        for (int i = 1; i < pickupList.length(); i++) {
+            if (building.getFloorByFloorNum(pickupFloorNum).getPersonByIndex(pickupList.at(i) - '0').getTargetFloor()
+                    > building.getFloorByFloorNum(pickupFloorNum).getPersonByIndex(pickupList.at(i) - '0').getCurrentFloor()) {
+                    return false;
+            }
         }
     }
-    
-    if (pickupList.length() < ELEVATOR_CAPACITY) {
-            return true;
-    }
-    
-    for (int i = 0; i < pickupList.length(); i++) {
-        if (pickupList.at(i) - '0' > listPeopleIndex) {
-            listPeopleIndex = pickupList.at(i) - '0';
-        }
-    }
-    if(building.getFloorByFloorNum(pickupFloorNum).getNumPeople() > listPeopleIndex) {
+
         return true;
-    }
-    
-    if (building.getFloorByFloorNum(pickupFloorNum).getPersonByIndex(pickupList.at(0) - '0').getTargetFloor()
-        > building.getFloorByFloorNum(pickupFloorNum).getPersonByIndex(pickupList.at(0) - '0').getCurrentFloor()) {
-        for (int i = 1; i < pickupList.length(); i++) {
-            if (building.getFloorByFloorNum(pickupFloorNum).getPersonByIndex(pickupList.at(i) - '0').getTargetFloor()
-        > building.getFloorByFloorNum(pickupFloorNum).getPersonByIndex(pickupList.at(i) - '0').getCurrentFloor()) {
-                return true;
-            }
-        }
-    }
-    else if (building.getFloorByFloorNum(pickupFloorNum).getPersonByIndex(pickupList.at(0) - '0').getTargetFloor()
-    < building.getFloorByFloorNum(pickupFloorNum).getPersonByIndex(pickupList.at(0) - '0').getCurrentFloor()) {
-        for (int i = 1; i < pickupList.length(); i++) {
-            if (building.getFloorByFloorNum(pickupFloorNum).getPersonByIndex(pickupList.at(i) - '0').getTargetFloor()
-                < building.getFloorByFloorNum(pickupFloorNum).getPersonByIndex(pickupList.at(i) - '0').getCurrentFloor()) {
-                return true;
-            }
-        }
-    }
-    return false;
 }
+
 
 // Stub for isValidPickupList for Core
 // You *must* revise this function according to the RME and spec
